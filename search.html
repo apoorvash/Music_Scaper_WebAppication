@@ -1,0 +1,283 @@
+<html>
+<head>
+<title>Music Search</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style media='screen' type='text/css'>tbody th, tbody td {text-align: center;}</style>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="blockui.js"></script>
+<script>
+$(document).ready(function() { 
+    $('#demo').click(function() { 
+        $.blockUI({ css: { 
+            border: 'none', 
+            padding: '15px', 
+            backgroundColor: '#000', 
+            '-webkit-border-radius': '10px', 
+            '-moz-border-radius': '10px', 
+            opacity: .5, 
+            color: '#fff' 
+        } }); 
+ 
+  
+    }); 
+}); 
+</script>
+<script>
+function checkblank()
+{
+	xhr = new XMLHttpRequest();
+	var str_len=document.getElementById("inputtitle").value.length;
+	if (str_len==0)
+	{
+		//$.unblockUI();
+		alert("Please enter something in the search box");
+		document.getElementById("results").innerHTML="";
+		setTimeout($.unblockUI, 2);
+		return false;
+	}
+	
+	var title=document.getElementById("inputtitle").value;
+	var type=document.getElementById("selecttype").value;
+	var url="http://cs-server.usc.edu:17952/examples/servlet/music_orig?title="+title+"&title_type="+type;
+	//alert(url);
+	xhr.open("GET",url, true); 
+	//alert(document.domain);
+	
+	xhr.onreadystatechange = function()
+	{
+		if (xhr.readyState == 4)
+		{
+			//alert(xhr.status);
+			if(xhr.status == 200)
+			{
+				//alert("ALert");
+				var response = xhr.responseText;
+				//alert(response);
+				var resp=eval("("+response+")");
+				//alert(resp.results.result.length);
+				if(resp.results.result.length>0)
+				{
+				//document.getElementById("results").innerHTML=resp.results.result.length;
+				htmltext="<table border=\"1\" style=\"margin: auto;\">";
+				if( type == "albums" )
+				{
+					//alert("same");
+					htmltext+="<tr><th>Image</th><th>Title</th><th>Artist</th><th>Genre</th><th>Year</th><th>Details</th><th>Post to FB</th></tr>";
+					for(i=0;i<resp.results.result.length;i++)
+					{
+					window.fbAsyncInit();
+					
+					htmltext+="<tr><td><img src=\""+resp.results.result[i].cover+"\" height=\"200\" width=\"150\"></img></td>";
+					if(resp.results.result[i].cover == "sprite-no-image_album.png")
+					{
+						resp.results.result[i].cover = "http://cs-server.usc.edu:17952/examples/servlets/sprite-no-image_album.png";
+					}
+					htmltext+="<td>"+resp.results.result[i].title+"</td>";
+					htmltext+="<td>"+resp.results.result[i].artist+"</td>";
+					htmltext+="<td>"+resp.results.result[i].genre+"</td>";
+					htmltext+="<td>"+resp.results.result[i].year+"</td>";
+					htmltext+="<td><a href=\""+resp.results.result[i].details+"\" target=\"_blank\">details</a></td>";
+					//htmltext+="<td><input type=\"button\" value=\"Facebook\" onclick=facepost(\""+resp.results.result[i].cover+"\",\""+resp.results.result[i].name+"\",\""+resp.results.result[i].genre+"\",\""+resp.results.result[i].year+"\",\""+resp.results.result[i].details+"\")</td></tr>";
+					htmltext+="<td><fb:login-button onlogin='facepost_al(\""+resp.results.result[i].cover+"\",\""+resp.results.result[i].title+"\",\""+resp.results.result[i].artist+"\",\""+resp.results.result[i].genre+"\",\""+resp.results.result[i].year+"\",\""+resp.results.result[i].details+"\")'>facebook</fb:login-button></td></tr>";
+					//alert("'facepost(\""+resp.results.result[i].cover+"\",\""+resp.results.result[i].title+"\",\""+resp.results.result[i].year+"\",\""+resp.results.result[i].director+"\",\""+resp.results.result[i].rating+"\",\""+resp.results.result[i].details+"\")'");
+					}
+				}	
+				if( type == "artists" )
+				{
+					//alert("same");
+					htmltext+="<tr><th>Image</th><th>Name</th><th>Genre</th><th>Year</th><th>Details</th><th>Post to FB</th></tr>";
+					for(i=0;i<resp.results.result.length;i++)
+					{
+					window.fbAsyncInit();
+					htmltext+="<tr><td><img src=\""+resp.results.result[i].cover+"\" height=\"200\" width=\"150\"></img></td>";
+					if(resp.results.result[i].cover == "sprite-no-image.png")
+					{
+						resp.results.result[i].cover = "http://cs-server.usc.edu:17952/examples/servlets/sprite-no-image.png";
+					}
+					htmltext+="<td>"+resp.results.result[i].name+"</td>";
+					htmltext+="<td>"+resp.results.result[i].genre+"</td>";
+					htmltext+="<td>"+resp.results.result[i].year+"</td>";
+					htmltext+="<td><a href=\""+resp.results.result[i].details+"\" target=\"_blank\">details</a></td>";
+					//htmltext+="<td><input type=\"button\" value=\"Facebook\" onclick=facepost(\""+resp.results.result[i].cover+"\",\""+resp.results.result[i].name+"\",\""+resp.results.result[i].genre+"\",\""+resp.results.result[i].year+"\",\""+resp.results.result[i].details+"\")</td></tr>";
+					htmltext+="<td><fb:login-button onlogin='facepost(\""+resp.results.result[i].cover+"\",\""+resp.results.result[i].name+"\",\""+resp.results.result[i].genre+"\",\""+resp.results.result[i].year+"\",\""+resp.results.result[i].details+"\")'>facebook</fb:login-button></td></tr>";
+					//alert("'facepost(\""+resp.results.result[i].cover+"\",\""+resp.results.result[i].title+"\",\""+resp.results.result[i].year+"\",\""+resp.results.result[i].director+"\",\""+resp.results.result[i].rating+"\",\""+resp.results.result[i].details+"\")'");
+					}
+					
+				}	
+				if( type == "song" )
+					{
+					
+				
+					//alert("same");
+					htmltext+="<tr><th>Play Song</th><th>Title</th><th>Performer</th><th>Composer</th><th>Details</th><th>Post to FB</th></tr>";
+					for(i=0;i<resp.results.result.length;i++)
+					{
+					window.fbAsyncInit();
+					if(resp.results.result[i].sample == "sprite-no-image_song.png")
+					{
+						resp.results.result[i].sample = "http://cs-server.usc.edu:17952/examples/servlets/sprite-no-image_song.png";
+						htmltext+="<tr><td><img height = 150px width = 150px src=\"sprite-no-image_song.png\"></td>";
+					}
+					else
+					{
+					htmltext+="<tr><td><a target=\"_blank\" href="+resp.results.result[i].sample+"><img height = 150px width = 150px src=\"sprite-no-image_song.png\"></a></td>";
+					}
+					htmltext+="<td>"+resp.results.result[i].title+"</td>";
+					htmltext+="<td>"+resp.results.result[i].performer+"</td>";
+					htmltext+="<td>"+resp.results.result[i].composer+"</td>";
+					htmltext+="<td><a href=\""+resp.results.result[i].song+"\" target=\"_blank\">details</a></td>";
+					//htmltext+="<td><input type=\"button\" value=\"Facebook\" onclick=facepost(\""+resp.results.result[i].cover+"\",\""+resp.results.result[i].name+"\",\""+resp.results.result[i].genre+"\",\""+resp.results.result[i].year+"\",\""+resp.results.result[i].details+"\")</td></tr>";
+					htmltext+="<td><fb:login-button onlogin='facepost_song(\""+resp.results.result[i].sample+"\",\""+resp.results.result[i].title+"\",\""+resp.results.result[i].performer+"\",\""+resp.results.result[i].composer+"\",\""+resp.results.result[i].song+"\")'>facebook</fb:login-button></td></tr>";
+					//alert("'facepost(\""+resp.results.result[i].cover+"\",\""+resp.results.result[i].title+"\",\""+resp.results.result[i].year+"\",\""+resp.results.result[i].director+"\",\""+resp.results.result[i].rating+"\",\""+resp.results.result[i].details+"\")'");
+					}
+				}
+				
+				htmltext+="</table>";
+				
+				//alert(htmltext);
+				document.getElementById("results").innerHTML=htmltext;
+				$.unblockUI();
+				}
+				if(resp.results.result.length==0)
+				{
+				var htmltext;
+				htmltext = "<h1 style=\"text-align:center\"> No records found!!</h1>";
+				document.getElementById("results").innerHTML=htmltext;
+				setTimeout($.unblockUI, 1);
+				}
+			}
+		}
+	}
+xhr.setRequestHeader("Connection","Close");
+xhr.setRequestHeader("Method", "GET"+url+"HTTP/1.1");
+xhr.send();
+}
+</script>
+</head>
+<body>
+<div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '140182772827757', // App ID
+      
+      status     : true, // check login status
+      cookie     : true, // enable cookies to allow the server to access the session
+      xfbml      : true , // parse XFBML
+      oauth      : true,
+    });
+
+    // Additional initialization code here
+  };
+
+  // Load the SDK Asynchronously
+  (function(d){
+     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement('script'); js.id = id; js.async = true;
+     js.src = "//connect.facebook.net/en_US/all.js";
+     ref.parentNode.insertBefore(js, ref);
+   }(document));
+   
+   function facepost(cov,nam,gen,yr,det){
+   var a="I like "+nam+" who is active since "+yr;
+   FB.ui(
+  {
+   method: 'feed',
+   message: 'getting educated about Facebook Connect',
+   name: nam,
+   caption: a,
+   description: 'Genre of music is '+gen,
+   link: det,
+   picture: cov,
+   properties: { "Look at the details" :
+        { text:"here" , href: det }
+   }
+  },
+  function(response) {
+    if (response && response.post_id) {
+      alert('Post was published.');
+    } else {
+      alert('Post was not published.');
+    }
+  }
+); }
+
+  function facepost_al(cov,tit,art,gen,yr,det){
+   var a="I like the album "+tit+" by "+art+" which was released in "+yr;
+   FB.ui(
+  {
+   method: 'feed',
+   message: 'getting educated about Facebook Connect',
+   name: tit,
+   caption: a,
+   description: 'Genre of music is '+gen,
+   link: det,
+   picture: cov,
+   properties: { "Look at the details" :
+        { text:"here" , href: det }
+   }
+  },
+  function(response) {
+    if (response && response.post_id) {
+      alert('Post was published.');
+    } else {
+      alert('Post was not published.');
+    }
+  }
+); }
+
+function facepost_song(sam,tit,per,com,det){
+   var a="I like the song "+tit+" by "+per+" and composed by "+com;
+   FB.ui(
+  {
+   method: 'feed',
+   message: 'getting educated about Facebook Connect',
+   name: tit,
+   caption: a,
+   link: sam,
+   picture: "http://cs-server.usc.edu:17952/examples/servlets/sprite-no-image_song.png",
+    properties: { "Look at the details" :
+        { text:"here" , href: det }
+   }
+  },
+  function(response) {
+    if (response && response.post_id) {
+      alert('Post was published.');
+    } else {
+      alert('Post was not published.');
+    }
+  }
+); }
+</script>
+
+
+<div style="text-align: center;">
+<h1>Discography Search</h1>
+<form name="myform" method="POST">
+<table cellpadding= "15px" border= "1" style="margin: auto;" >
+<tr>
+<td style="text-align:center;">
+<br/>
+<span style="float:left;">Search: <input id="inputtitle" type="text" name="input_t" size="50" /></span><br/><br/>
+<span style="float:left;">Type: 
+<select name="select_t" id="selecttype">
+  <option value="artists">Artist</option>
+  <option value="albums">Album</option>
+  <option value="song">Songs</option>
+</select>
+</span>
+<br/>
+<br/>
+<input type="button" id="demo" value="Search" onclick="javaScript:checkblank()">
+</td>
+</tr>
+</table>
+
+<br/>
+</form>
+
+</div>
+<div id="results"></div>
+</body>
+</html>
